@@ -187,8 +187,6 @@ def main(args):
 
     for filename, fulldata in data_list:
         filename = filename.split(".")[0]
-        # if filename != "bridge_comparison":
-        #     continue
         print(f"### Solving {filename} ###")
         if args.projector:
             output_dir = os.path.join(
