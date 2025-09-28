@@ -103,6 +103,17 @@ def main(args):
                     model.set_adapter(combination_type)
                     ret.append(get_pred(model, psgs=None if args.inference_method == "prag" else passages))
                     model.delete_adapter(combination_type)
+                elif args.merge_method == "uniform":
+                    combination_type = "uniform"
+                    model.add_weighted_adapter(
+                        adapters = [str(i) for i in range(len(passages))], 
+                        weights = [1] * len(passages),
+                        adapter_name = combination_type, 
+                        combination_type = combination_type,
+                    )
+                    model.set_adapter(combination_type)
+                    ret.append(get_pred(model, psgs=None if args.inference_method == "prag" else passages))
+                    model.delete_adapter(combination_type)
                 elif args.merge_method == "ties":
                     combination_type = "ties"
                     model.add_weighted_adapter(
