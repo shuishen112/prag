@@ -305,6 +305,19 @@ def predict(model, tokenizer, generation_config, question, with_cot, passages=No
     text = tokenizer.decode(output, skip_special_tokens=True)
     return text
 
+def predict_poly(model, tokenizer, generation_config, question, with_cot, passages=None, task_ids=None):
+    model.eval()
+    input_ids = get_prompt(tokenizer, question, passages=passages, with_cot=with_cot)
+    input_len = len(input_ids)
+    input_ids = torch.tensor(input_ids).unsqueeze(0).to(model.device)
+    task_ids = torch.tensor(task_ids).unsqueeze(0).to(model.device)
+    with torch.no_grad():
+        output = model.generate(input_ids, task_ids=task_ids, **generation_config)
+    output = output.sequences[0][input_len:]
+    text = tokenizer.decode(output, skip_special_tokens=True)
+    return text
+
+
 
 # -------------------------------- for DyPRAG Injection----------------------------------------
 def delta_inject(model, adapter_weights):
