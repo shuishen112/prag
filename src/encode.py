@@ -184,7 +184,6 @@ def main(args):
         )
 
     cot_name = "cot" if args.with_cot else "direct"
-
     for filename, fulldata in data_list:
         filename = filename.split(".")[0]
         print(f"### Solving {filename} ###")
@@ -220,6 +219,7 @@ def main(args):
                     # print exists
                     print(f"Adapter model already exists for {save_path}")
                     continue
+    
                 model = train(
                     data["question"],
                     [augment[pid]],
