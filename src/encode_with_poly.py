@@ -213,6 +213,9 @@ def main(args):
         os.makedirs(output_dir, exist_ok=True)
         fulldata = fulldata if args.sample == -1 else fulldata[: args.sample]
 
+        if os.path.exists(os.path.join(output_dir, "adapter_model.safetensors")):
+            print(f"Adapter model already exists for {output_dir}")
+            continue
         # create the dataset for a poly model, each pid is a task_ids
         poly_dataset = {"prompt_ids": [], "task_ids": []}
         for did, data in tqdm(enumerate(fulldata), total=len(fulldata)):
@@ -223,7 +226,7 @@ def main(args):
                 poly_dataset["prompt_ids"].extend(prompt_ids)
                 poly_dataset["task_ids"].extend(task_ids)
         train_data = TrainingDataWithPoly(poly_dataset["prompt_ids"], tokenizer, poly_dataset["task_ids"])
-        train_data = train_data[:10]
+
         train_dataloader = torch.utils.data.DataLoader(
             train_data,
             batch_size=args.per_device_train_batch_size,
@@ -239,6 +242,7 @@ def main(args):
             init_adapter_path,
             output_dir,
         )
+        
         # inference the poly model
         model = PeftModel.from_pretrained(model, output_dir, adapter_name="poly", is_trainable=False)
         model.eval()
